@@ -7,8 +7,6 @@ Middle Ware Stepps
 2) check if is file
 3) (show path & method) and handle any errors
 
-
-
 */
 
 import {
@@ -167,4 +165,6 @@ app.addEventListener(
   ({ port }) => console.log(`listening on port: ${port}`),
 );
 console.log(Deno.cwd());
+
+
 await app.listen({ port });

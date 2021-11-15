@@ -25,14 +25,14 @@ export function extractCredentials(token) {
   console.log("checkAuth");
   if (token === undefined) throw new Error("no auth header");
   const [type, hash] = token.split(" ");
-  console.log(`${type} : ${hash}`);
+  //console.log(`${type} : ${hash}`);
   if (type !== "Basic") throw new Error("wrong auth type");
   const str = atob(hash);
-  console.log(str);
+  //console.log(str);
   if (str.indexOf(":") === -1) throw new Error("invalid auth format");
   const [user, pass] = str.split(":");
-  console.log(user);
-  console.log(pass);
+  //console.log(user);
+  //console.log(pass);
   return { user, pass };
 }
 

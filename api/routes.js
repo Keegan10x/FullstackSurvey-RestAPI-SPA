@@ -4,10 +4,69 @@ import { Router } from "https://deno.land/x/oak@v6.5.1/mod.ts";
 
 import { extractCredentials, saveFile } from "./modules/util.js";
 import { login, register } from "./modules/accounts.js";
-
+import { getUserId, saveSurvey, getSurveys} from "./modules/dbinterface.js";
+ 
 const router = new Router();
 
-// the routes defined here
+// assignment end-points
+
+//Feature 1
+//Creates survery and insert to DB
+router.post("/api/surveys", async (context) => {
+  console.log("POST /api/surveys");
+  const token = context.request.headers.get("Authorization");
+  console.log(`auth: ${token}`)
+  //context.response.headers.set("Content-Type", "application/vnd.api+json")	
+  try{
+	  const body = await context.request.body();
+	  let data = await body.value;
+	  const credentials = extractCredentials(token);
+	  const now = new Date().toISOString()
+	  const date = now.slice(0,19).replace('T', ' ')
+	  console.log(date)
+	  data.userid = await getUserId(credentials.user)
+	  data.created = date
+	  
+	  console.log(data);
+	  await saveSurvey(data)
+	  
+	  context.response.status = 201
+	  context.response.body = JSON.stringify({ status: 'sucess' })
+  }catch(err){
+	  console.log(err)
+	  context.response.status = 400
+	  context.response.body = JSON.stringify({ status: 'failed' })
+  }
+});
+
+
+
+
+//Feature 2
+//Get survey name, date and questions post link
+router.get("/api/surveys", async (context) => {
+  console.log("GET /");
+  const token = context.request.headers.get("Authorization");
+  console.log(`auth: ${token}`)
+  
+  try{
+	  const surveys = await getSurveys()
+	  console.log(surveys)  
+	  context.response.status = 201
+	  surveys.forEach(survey => {
+		survey.href = `https://orange-martin-8080.codio-box.uk/api/surveys/${survey.id}`
+	  })
+	  console.log(surveys)
+	  context.response.body = JSON.stringify(surveys, null, 2)
+	  
+  }catch(err){
+	  console.log(err)
+	  context.response.status = 400
+	  context.response.body = JSON.stringify({ status: 'failed' })
+  }
+});
+
+
 router.get("/", async (context) => {
   console.log("GET /");
   const data = await Deno.readTextFile("spa/index.html");

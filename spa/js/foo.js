@@ -27,8 +27,10 @@ async function uploadData(event) {
   event.preventDefault();
   const element = document.querySelector('input[name="file"]');
   console.log(element);
+  //useful -------
   const file = document.querySelector('input[name="file"]').files[0];
   file.base64 = await file2DataURI(file);
+  //useful -------
   file.user = localStorage.getItem("username");
   console.log(file);
   const url = "/api/files";
