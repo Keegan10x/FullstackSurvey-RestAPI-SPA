@@ -4,7 +4,7 @@ import { Router } from "https://deno.land/x/oak@v6.5.1/mod.ts";
 
 import { extractCredentials, saveFile } from "./modules/util.js";
 import { login, register } from "./modules/accounts.js";
-import { getUserId, saveSurvey, getSurveys} from "./modules/dbinterface.js";
+import { getUserId, saveSurvey, getMySurveys, addQuestion, getNumberOfQuestions} from "./modules/dbinterface.js";
  
 const router = new Router();
 
@@ -23,7 +23,7 @@ router.post("/api/surveys", async (context) => {
 	  const credentials = extractCredentials(token);
 	  const now = new Date().toISOString()
 	  const date = now.slice(0,19).replace('T', ' ')
-	  console.log(date)
+	  //console.log(date)
 	  data.userid = await getUserId(credentials.user)
 	  data.created = date
 	  
@@ -40,23 +40,24 @@ router.post("/api/surveys", async (context) => {
 });
 
 
-
-
 //Feature 2
-//Get survey name, date and questions post link
-router.get("/api/surveys", async (context) => {
-  console.log("GET /");
+//Get my survey name, date and questions post link
+router.get("/api/mysurveys", async (context) => {
+  console.log("GET /api/surveys");
   const token = context.request.headers.get("Authorization");
   console.log(`auth: ${token}`)
-  
+  const credentials = extractCredentials(token);
+  const userid = await getUserId(credentials.user)
   try{
-	  const surveys = await getSurveys()
-	  console.log(surveys)  
-	  context.response.status = 201
-	  surveys.forEach(survey => {
-		survey.href = `https://orange-martin-8080.codio-box.uk/api/surveys/${survey.id}`
-	  })
+	  let surveys = await getMySurveys(userid)
+	  
+	  for(const survey of surveys){
+		  survey.questions = await getNumberOfQuestions(survey.id)
+		  survey.href = `https://orange-martin-8080.codio-box.uk/api/mysurveys/${survey.id}`
+	  }
+
 	  console.log(surveys)
+	  context.response.status = 201
 	  context.response.body = JSON.stringify(surveys, null, 2)
 	  
   }catch(err){
@@ -66,6 +67,39 @@ router.get("/api/surveys", async (context) => {
   }
 });
 
+//Feature 2
+//Post my survey questions
+router.post('/api/mysurveys/:id', async context => {
+	console.log("GET /api/mysurveys/:id");
+	const token = context.request.headers.get("Authorization");
+	try{
+		const body = await context.request.body()
+		const questions = await body.value
+		const now = new Date().toISOString()
+		const date = now.slice(0,19).replace('T', ' ')
+		console.log(questions)
+		
+		for(const question of questions){
+			await addQuestion(question, context.params.id, date)
+		}
+
+		context.response.status = 201
+		context.response.body = JSON.stringify({ status: 'questions sucessfully added' })
+	}catch(err){
+		console.log(err)
+		context.response.status = 400
+		context.response.body = JSON.stringify({ status: 'failed' })
+	}
+	
+	
+});
+
+
+//Feature 3
+//get all surveys and the number of questions
+
+//Feature 4
+//needs a get and post method for the survey questions
 
 router.get("/", async (context) => {
   console.log("GET /");
