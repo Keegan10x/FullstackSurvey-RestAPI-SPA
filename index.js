@@ -57,6 +57,7 @@ app.use(async (context, next) => {
       return;
     }
     // if the authorization header is missing
+    //problem is this endpoint includes /api/accouts. User required an auth token to register but needs to register inorder to gain an auth token.
     if (context.request.headers.get("Authorization") === null) {
       console.log("missing Authorization header");
       context.response.status = 401;

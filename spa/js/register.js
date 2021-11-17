@@ -3,6 +3,7 @@
 import { customiseNavbar, loadPage, showMessage } from "../util.js";
 
 export async function setup(node) {
+  console.log('hitting here!!!!!!!!!!!')
   try {
     console.log("REGISTER: setup");
     console.log(node);
@@ -14,22 +15,26 @@ export async function setup(node) {
   }
 }
 
+//application/json
 async function register() {
-  event.preventDefault();
-  const formData = new FormData(event.target);
-  const data = Object.fromEntries(formData.entries());
-  console.log(data);
-  const url = "/api/accounts";
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  };
-  const response = await fetch(url, options);
-  const json = await response.json();
-  console.log(json);
-  showMessage("new account registered");
-  loadPage("login");
+	  console.log('callin register !!!!!!!!')
+	  event.preventDefault();
+	  const formData = new FormData(event.target);
+	  console.log(formData)
+	  const data = Object.fromEntries(formData.entries());
+	  console.log(data);
+	  const url = "/accounts";
+	  const options = {
+		  method: "POST",
+		  headers: {
+			  "Content-Type":"application/json",
+		  },
+		  body: JSON.stringify(data),
+		  };
+	  console.log(options)
+	  const response = await fetch(url, options);
+	  const json = await response.json();
+	  console.log(json);
+	  showMessage("new account registered");
+	  loadPage("login");
 }

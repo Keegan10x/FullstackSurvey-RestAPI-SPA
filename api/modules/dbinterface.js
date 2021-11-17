@@ -9,7 +9,7 @@ export async function getUserId(user){
 
 export async function saveSurvey(data){
 	const sql = `INSERT INTO surveys(name, description, usr, created)\
-VALUES('${data.surveyName}', '${data.surveyDescription}', ${data.userid}, '${data.created}')`
+VALUES("${data.surveyName}", "${data.surveyDescription}", ${data.userid}, "${data.created}")`
 	console.log(sql)
 	await db.query(sql)
 }
@@ -34,4 +34,28 @@ export async function getNumberOfQuestions(surveyid){
 	const result = await db.query(sql)
 	console.log(sql)
 	return result.pop()[`COUNT(*)`]
+}
+
+
+export async function getAllFrom(table){
+	const sql = `SELECT * FROM ${table}`
+	const result = await db.query(sql)
+	console.log(sql)
+	return result
+}
+
+
+export async function getSurveyQuestions(surveyid){
+	const sql = `SELECT id, title, description FROM questions WHERE survey=${surveyid}`
+	const result = await db.query(sql)
+	console.log(sql)
+	return result
+}
+
+
+export async function addResponse(userid, surveyid, rsp){
+	const sql = `INSERT INTO responses(question, usr, survey, response)\
+VALUES(${rsp.questionId}, ${userid}, ${surveyid}, ${rsp.response})`
+	await db.query(sql)
+	console.log(sql)
 }

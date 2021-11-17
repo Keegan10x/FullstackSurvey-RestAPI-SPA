@@ -4,7 +4,7 @@ import { Router } from "https://deno.land/x/oak@v6.5.1/mod.ts";
 
 import { extractCredentials, saveFile } from "./modules/util.js";
 import { login, register } from "./modules/accounts.js";
-import { getUserId, saveSurvey, getMySurveys, addQuestion, getNumberOfQuestions} from "./modules/dbinterface.js";
+import { getUserId, saveSurvey, getMySurveys, addQuestion, getNumberOfQuestions, getAllFrom, getSurveyQuestions, addResponse} from "./modules/dbinterface.js";
  
 const router = new Router();
 
@@ -12,7 +12,7 @@ const router = new Router();
 
 //Feature 1
 //Creates survery and insert to DB
-router.post("/api/surveys", async (context) => {
+router.post("/api/newsurveys", async (context) => {
   console.log("POST /api/surveys");
   const token = context.request.headers.get("Authorization");
   console.log(`auth: ${token}`)
@@ -96,10 +96,79 @@ router.post('/api/mysurveys/:id', async context => {
 
 
 //Feature 3
-//get all surveys and the number of questions
+//get all existing surveys with completion links
+router.get("/api/surveys", async (context) => {
+  console.log("GET /api/surveys");
+  const token = context.request.headers.get("Authorization");
+  console.log(`auth: ${token}`)
+  const credentials = extractCredentials(token);
+  const userid = await getUserId(credentials.user)
+  try{
+	  let surveys = await getAllFrom('surveys')
+	  
+	  for(const survey of surveys){
+		  survey.questions = await getNumberOfQuestions(survey.id)
+		  survey.href = `https://orange-martin-8080.codio-box.uk/api/surveys/${survey.id}`
+	  }
+
+	  console.log(surveys)
+	  context.response.status = 201
+	  context.response.body = JSON.stringify(surveys, null, 2)
+	  
+  }catch(err){
+	  console.log(err)
+	  context.response.status = 400
+	  context.response.body = JSON.stringify({ status: 'failed' })
+  }
+});
+
+
 
 //Feature 4
-//needs a get and post method for the survey questions
+//needs a get method for getting the questions
+//needs a post method for submitting responses
+
+//get survey questions
+router.get('/api/surveys/:id', async (context) => {
+  console.log("GET /api/surveys/:id");
+  const token = context.request.headers.get("Authorization");
+  try{
+	let data = { questions: await getSurveyQuestions(context.params.id) } 
+	data.submit = `https://orange-martin-8080.codio-box.uk/api/surveys/${context.params.id}`
+	console.log(data)
+	context.response.body = JSON.stringify(data, null, 2)
+  }catch(err){
+	console.log(err)
+	context.response.status = 400
+	context.response.body = JSON.stringify({ status: 'failed' })
+  }
+});
+
+//submit survey questions
+router.post('/api/surveys/:id', async context => {
+	console.log("GET /api/mysurveys/:id");
+	const token = context.request.headers.get("Authorization");
+	try{
+		const body = await context.request.body()
+		const responses = await body.value
+		const credentials = extractCredentials(token);
+		const userid = await getUserId(credentials.user)
+		const surveyid = context.params.id
+				
+		for(const response of responses){
+			await addResponse(userid, surveyid, response)
+		}
+	
+		context.response.status = 201
+		context.response.body = JSON.stringify({ status: 'questions sucessfully added' })
+	}catch(err){
+		console.log(err)
+		context.response.status = 400
+		context.response.body = JSON.stringify({ status: 'failed' })
+	}
+	
+});
+
 
 router.get("/", async (context) => {
   console.log("GET /");
@@ -140,18 +209,26 @@ router.get("/api/accounts", async (context) => {
   }
 });
 
-router.post("/api/accounts", async (context) => {
-  console.log("POST /api/accounts");
-  const body = await context.request.body();
-  const data = await body.value;
-  console.log(data);
-  await register(data);
-  context.response.status = 201;
-  context.response.body = JSON.stringify({
-    status: "success",
-    msg: "account created",
-  });
-});
+
+//manages registering
+router.post('/accounts', async context => {
+	console.log('POST /api/acc')
+	const body  = await context.request.body()
+	const data = await body.value
+	console.log(data)
+	try{
+		await register(data)
+		context.response.status = 201
+		context.response.body = JSON.stringify({ status: 'success', msg: 'account created' })	
+	}catch(err){
+		console.log(err)
+		context.response.status = 400
+		context.response.body = JSON.stringify({ status: 'failed', msg: "couldnt create account" })
+	}
+	
+})
+
+
 
 router.post("/api/files", async (context) => {
   console.log("POST /api/files");
