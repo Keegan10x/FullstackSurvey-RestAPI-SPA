@@ -1,3 +1,5 @@
+//DB ORM
+
 import { db } from "./db.js";
 
 export async function getUserId(user){
@@ -32,7 +34,7 @@ VALUES(${surveyId}, '${questionObj.title}', '${questionObj.description}', '${dat
 export async function getNumberOfQuestions(surveyid){
 	const sql = `SELECT COUNT(*) FROM questions WHERE survey=${surveyid}`
 	const result = await db.query(sql)
-	console.log(sql)
+	//console.log(sql)
 	return result.pop()[`COUNT(*)`]
 }
 
@@ -58,4 +60,20 @@ export async function addResponse(userid, surveyid, rsp){
 VALUES(${rsp.questionId}, ${userid}, ${surveyid}, ${rsp.response})`
 	await db.query(sql)
 	console.log(sql)
+}
+
+
+export async function hasUserDone(userid, surveyid){
+	const sql = `SELECT response FROM responses WHERE usr=${userid} AND survey=${surveyid}`
+	const result = await  db.query(sql)
+	if(!result.length) return false
+	return true
+}
+
+
+export async function getAverageScore(userid, surveyid){
+	const sql = `SELECT AVG(response) 'avg' FROM responses WHERE usr=${userid} AND survey=${surveyid}`
+	console.log(sql)
+	const result = await db.query(sql)
+	return result[0].avg
 }
