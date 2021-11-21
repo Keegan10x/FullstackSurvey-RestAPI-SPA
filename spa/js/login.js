@@ -27,7 +27,7 @@ async function login() {
   const data = Object.fromEntries(formData.entries());
   const token = "Basic " + btoa(`${data.user}:${data.pass}`);
   console.log("making call to secureGet");
-  const response = await secureGet("/api/accounts", token);
+  const response = await secureGet("/api/v1/accounts", token);
   console.log(response);
   if (response.status === 200) {
     localStorage.setItem("username", response.json.data.username);

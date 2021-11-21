@@ -33,7 +33,7 @@ async function uploadData(event) {
   //useful -------
   file.user = localStorage.getItem("username");
   console.log(file);
-  const url = "/api/files";
+  const url = "/api/v1/files";
   const options = {
     method: "POST",
     headers: {

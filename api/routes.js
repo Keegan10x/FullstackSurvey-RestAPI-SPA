@@ -1,3 +1,5 @@
+//https://jsonapi.org/format/
+
 //https://github.coventry.ac.uk/agile/projects/blob/master/19%20Survey.md
 /* routes.js */
 
@@ -6,8 +8,8 @@ import { Router } from "https://deno.land/x/oak@v6.5.1/mod.ts";
 import { extractCredentials, saveFile } from "./modules/util.js";
 import { login, register } from "./modules/accounts.js";
 import { getUserId, saveSurvey, getMySurveys, addQuestion, getNumberOfQuestions, getAllFrom, getSurveyQuestions, addResponse, hasUserDone, getAverageScore} from "./modules/dbinterface.js";
-import { survey, question, response } from './modules/schema.js'
- 
+import { survey, question, response, creds } from './modules/schema.js'
+import { surveySch } from './modules/schema.js'
 const router = new Router();
 
 // assignment end-points
@@ -33,13 +35,12 @@ router.post("/api/v1/mysurveys", async (context) => {
 	  const valid = survey(data)
 	  if(valid === false) throw survey.errors
 	  await saveSurvey(data)
-	  
 	  context.response.status = 201
 	  context.response.body = JSON.stringify({ status: 'SUCESS, VALID OBJECT' })
   }catch(err){
 	  console.log(err)
-	  context.response.status = 400
-	  context.response.body = JSON.stringify({ status: 'INVALID OBJECT' })
+	  context.response.status = 406
+	  context.response.body = JSON.stringify({ status: 'INVALID OBJECT', err:survey.errors })
   }
 });
 
@@ -48,16 +49,16 @@ router.post("/api/v1/mysurveys", async (context) => {
 //Get my survey name, date and questions post link
 router.get("/api/v1/mysurveys", async (context) => {
   console.log("GET /api/surveys");
+  console.log(context.request.url.href)
   const token = context.request.headers.get("Authorization");
   console.log(`auth: ${token}`)
   const credentials = extractCredentials(token);
   const userid = await getUserId(credentials.user)
   try{
 	  let surveys = await getMySurveys(userid)
-	  
 	  for(const survey of surveys){
 		  survey.questions = await getNumberOfQuestions(survey.id)
-		  survey.href = `https://orange-martin-8080.codio-box.uk/api/v1/mysurveys/${survey.id}`
+		  survey.href = `https://${context.request.url.host}/${context.request.url.pathname}`
 	  }
 
 	  console.log(surveys)
@@ -91,8 +92,8 @@ router.post('/api/v1/mysurveys/:id', async context => {
 		context.response.body = JSON.stringify({ status: 'questions sucessfully added' })
 	}catch(err){
 		console.log(err)
-		context.response.status = 400
-		context.response.body = JSON.stringify({ status: 'INVALID OBJECT' })
+		context.response.status = 406
+		context.response.body = JSON.stringify({ status: 'INVALID OBJECT', err:question.errors })
 	}
 	
 	
@@ -115,14 +116,15 @@ router.get("/api/v1/surveys", async (context) => {
 		  if(await hasUserDone(userid, survey.id)){
 			  survey.avgScore = await getAverageScore(userid, survey.id)
 		  }else{
-			  survey.href = `https://orange-martin-8080.codio-box.uk/api/v1/surveys/${survey.id}`
+			  survey.href = `https://${context.request.url.host}${context.request.url.pathname}/${survey.id}`
 		  }
 	
 	  }
+	
 	  
-	  console.log(surveys)
+	  surveySch.data = surveys
 	  context.response.status = 201
-	  context.response.body = JSON.stringify(surveys, null, 2)
+	  context.response.body = JSON.stringify(surveySch, null, 2)
 	  
   }catch(err){
 	  console.log(err)
@@ -142,7 +144,7 @@ router.get('/api/v1/surveys/:id', async (context) => {
   const token = context.request.headers.get("Authorization");
   try{
 	let data = { questions: await getSurveyQuestions(context.params.id) } 
-	data.submit = `https://orange-martin-8080.codio-box.uk/api/v1/surveys/${context.params.id}`
+	data.submit = `https://${context.request.url.host}${context.request.url.pathname}`
 	console.log(data)
 	context.response.body = JSON.stringify(data, null, 2)
   }catch(err){
@@ -172,8 +174,8 @@ router.post('/api/v1/surveys/:id', async context => {
 		context.response.body = JSON.stringify({ status: 'questions sucessfully added' })
 	}catch(err){
 		console.log(err)
-		context.response.status = 400
-		context.response.body = JSON.stringify({ status: 'INVALID OBJECT' })
+		context.response.status = 406
+		context.response.body = JSON.stringify({ status: 'INVALID OBJECT', err:response.errors })
 	}
 	
 });
@@ -227,12 +229,15 @@ router.post('/api/v1/accounts', async context => {
 	const data = await body.value
 	console.log(data)
 	try{
+		const valid = creds(data)
+		if(valid === false) throw creds.errors
+		
 		await register(data)
 		context.response.status = 201
 		context.response.body = JSON.stringify({ status: 'success', msg: 'account created' })	
 	}catch(err){
 		console.log(err)
-		context.response.status = 400
+		context.response.status = 406
 		context.response.body = JSON.stringify({ status: 'failed', msg: "couldnt create account" })
 	}
 	
@@ -248,3 +253,5 @@ router.get("/(.*)", async (context) => {
 });
 
 export default router;
+
+

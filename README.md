@@ -52,3 +52,20 @@ When checking for code quality the following command will be run:
 ```
 $ deno lint --unstable api
 ```
+
+
+## Headders
+
+```
+Authorization: Basic d2lja2o6dGVzdDEyMw==
+Content-Type: application/vnd.api+json
+```
+
+## API Crul Test
+
+```
+curl -i -H "Authorization:Basic d2lja2o6dGVzdDEyMw=="  -H "Content-Type: application/vnd.api+json" -X GET https://orange-martin-8080.codio-box.uk/api/v1/surveys
+```
+
+
+

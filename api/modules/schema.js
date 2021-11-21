@@ -2,7 +2,23 @@ import Ajv from './ajv.js'
 
 const ajv = new Ajv({allErrors: true})
 
-//posting survey schema
+//sechema for creating account
+export const creds = ajv.compile({
+	properties: {
+		user: {
+			type: "string",
+			minLength: 2,
+		},
+		pass: {
+			type: "string",
+			minLength: 2,
+		},
+	},
+	required: ['user', 'pass']
+})
+
+
+//schema for posting surveys
 export const survey = ajv.compile({
   properties: {
     surveyName: { 
@@ -20,7 +36,7 @@ export const survey = ajv.compile({
 })
 
 
-//posting question schema
+//schema for posting questions
 export const question = ajv.compile({
 	type: 'array',
 	minItems: 1,
@@ -44,7 +60,7 @@ export const question = ajv.compile({
 })
 
 
-//posting response schema
+//schema for posting responses
 export const response = ajv.compile({
 	type: 'array',
 	minItems: 1,
@@ -64,3 +80,22 @@ export const response = ajv.compile({
 	},
 	required: ['items']
 })
+
+
+
+
+
+
+//Feedback
+export let surveySch = {
+		  name: 'surveys',
+		  desc: 'a list of all created survey',
+		  schema: {
+			  id: 'number',
+			  usr: 'number',
+			  name: 'string',
+			  description: 'string',
+			  created: 'ISO8601 string',
+			  questions: 'number'
+		  },
+	  }

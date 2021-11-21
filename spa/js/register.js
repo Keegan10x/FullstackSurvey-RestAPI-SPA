@@ -23,11 +23,11 @@ async function register() {
 	  console.log(formData)
 	  const data = Object.fromEntries(formData.entries());
 	  console.log(data);
-	  const url = "/api/accounts";
+	  const url = "/api/v1/accounts";
 	  const options = {
 		  method: "POST",
 		  headers: {
-			  "Content-Type":"application/json",
+			  "Content-Type":"application/vnd.api+json",
 		  },
 		  body: JSON.stringify(data),
 		  };
