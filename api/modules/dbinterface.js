@@ -2,12 +2,14 @@
 
 import { db } from "./db.js";
 
+
 export async function getUserId(user){
 	const sql = `SELECT id FROM accounts WHERE user='${user}'`
 	console.log(sql)
 	const result = await db.query(sql)
 	return result[0].id
 }
+
 
 export async function saveSurvey(data){
 	const sql = `INSERT INTO surveys(name, description, usr, created)\
@@ -31,6 +33,7 @@ VALUES(${surveyId}, '${questionObj.title}', '${questionObj.description}', '${dat
 	await db.query(sql)
 }
 
+
 export async function getNumberOfQuestions(surveyid){
 	const sql = `SELECT COUNT(*) FROM questions WHERE survey=${surveyid}`
 	const result = await db.query(sql)
@@ -42,7 +45,7 @@ export async function getNumberOfQuestions(surveyid){
 export async function getAllFrom(table){
 	const sql = `SELECT * FROM ${table}`
 	const result = await db.query(sql)
-	console.log(sql)
+	console.log(result)
 	return result
 }
 
@@ -50,7 +53,7 @@ export async function getAllFrom(table){
 export async function getSurveyQuestions(surveyid){
 	const sql = `SELECT id, title, description FROM questions WHERE survey=${surveyid}`
 	const result = await db.query(sql)
-	console.log(sql)
+	result.map(question => question.type = 'question')
 	return result
 }
 

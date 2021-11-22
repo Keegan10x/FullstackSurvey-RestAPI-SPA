@@ -9,7 +9,7 @@ import { extractCredentials, saveFile } from "./modules/util.js";
 import { login, register } from "./modules/accounts.js";
 import { getUserId, saveSurvey, getMySurveys, addQuestion, getNumberOfQuestions, getAllFrom, getSurveyQuestions, addResponse, hasUserDone, getAverageScore} from "./modules/dbinterface.js";
 import { survey, question, response, creds } from './modules/schema.js'
-import { surveySch } from './modules/schema.js'
+import { surveySch, mysurveySch, questionSch, accountsSch, mysurveyPostSch, myquestionsPostSch, myresponsesPostSch, myaccountsPostSch} from './modules/schema.js'
 const router = new Router();
 
 // assignment end-points
@@ -30,17 +30,25 @@ router.post("/api/v1/mysurveys", async (context) => {
   data.userid = await getUserId(credentials.user)
   data.created = date
   console.log(data);
-	  
+  mysurveyPostSch.links.self = `https://${context.request.url.host}${context.request.url.pathname}`
+  
   try{
 	  const valid = survey(data)
+	  console.log(valid)
 	  if(valid === false) throw survey.errors
 	  await saveSurvey(data)
+	  mysurveyPostSch.status = 'SUCESS, VALID OBJECT'
+	  mysurveyPostSch.data = data
 	  context.response.status = 201
-	  context.response.body = JSON.stringify({ status: 'SUCESS, VALID OBJECT' })
+	  myquestionsPostSch.errors = null
+	  context.response.body = JSON.stringify(mysurveyPostSch)
   }catch(err){
 	  console.log(err)
 	  context.response.status = 406
-	  context.response.body = JSON.stringify({ status: 'INVALID OBJECT', err:survey.errors })
+	  mysurveyPostSch.status = 406
+	  mysurveyPostSch.errors = survey.errors
+	  console.log(mysurveyPostSch)
+	  context.response.body = JSON.stringify(mysurveyPostSch)
   }
 });
 
@@ -54,21 +62,26 @@ router.get("/api/v1/mysurveys", async (context) => {
   console.log(`auth: ${token}`)
   const credentials = extractCredentials(token);
   const userid = await getUserId(credentials.user)
+  mysurveySch.links.self = `https://${context.request.url.host}${context.request.url.pathname}`
   try{
 	  let surveys = await getMySurveys(userid)
 	  for(const survey of surveys){
+		  survey.type = 'survey'
 		  survey.questions = await getNumberOfQuestions(survey.id)
-		  survey.href = `https://${context.request.url.host}/${context.request.url.pathname}`
+		  survey.href = `https://${context.request.url.host}${context.request.url.pathname}/${survey.id}`
 	  }
-
+	  
+	  mysurveySch.data = surveys
 	  console.log(surveys)
 	  context.response.status = 201
-	  context.response.body = JSON.stringify(surveys, null, 2)
+	  context.response.body = JSON.stringify(mysurveySch, null, 2)
 	  
   }catch(err){
 	  console.log(err)
 	  context.response.status = 400
-	  context.response.body = JSON.stringify({ status: 'failed' })
+	  mysurveySch.status = 400
+	  mysurveySch.response = 'failed'
+	  context.response.body = JSON.stringify({ mysurveySch })
   }
 });
 
@@ -81,6 +94,7 @@ router.post('/api/v1/mysurveys/:id', async context => {
 	const questions = await body.value
 	const now = new Date().toISOString()
 	const date = now.slice(0,19).replace('T', ' ')
+	myquestionsPostSch.links.self = `https://${context.request.url.host}${context.request.url.pathname}`
 	console.log(questions)
 	try{	
 		const valid = question(questions)
@@ -88,12 +102,21 @@ router.post('/api/v1/mysurveys/:id', async context => {
 		for(const question of questions){
 			await addQuestion(question, context.params.id, date)
 		}
+		
 		context.response.status = 201
-		context.response.body = JSON.stringify({ status: 'questions sucessfully added' })
+		myquestionsPostSch.status = 201
+		myquestionsPostSch.response = 'questions sucessfully added'
+		myquestionsPostSch.errors = null
+		myquestionsPostSch.data = questions
+		
+		context.response.body = JSON.stringify(myquestionsPostSch)
 	}catch(err){
 		console.log(err)
 		context.response.status = 406
-		context.response.body = JSON.stringify({ status: 'INVALID OBJECT', err:question.errors })
+		myquestionsPostSch.status = 406
+		myquestionsPostSch.errors = question.error
+		myquestionsPostSch.response = 'INVALID OBJECT'
+		context.response.body = JSON.stringify(myquestionsPostSch)
 	}
 	
 	
@@ -108,10 +131,12 @@ router.get("/api/v1/surveys", async (context) => {
   console.log(`auth: ${token}`)
   const credentials = extractCredentials(token);
   const userid = await getUserId(credentials.user)
+  let surveys = await getAllFrom('surveys')
+  surveySch.links.self = `https://${context.request.url.host}${context.request.url.pathname}`
   try{
-	  let surveys = await getAllFrom('surveys')
-	  
+	  console.log(surveys)
 	  for(const survey of surveys){
+		  survey.type = 'survey'
 		  survey.questions = await getNumberOfQuestions(survey.id)
 		  if(await hasUserDone(userid, survey.id)){
 			  survey.avgScore = await getAverageScore(userid, survey.id)
@@ -120,8 +145,7 @@ router.get("/api/v1/surveys", async (context) => {
 		  }
 	
 	  }
-	
-	  
+	  //console.log(surveys)
 	  surveySch.data = surveys
 	  context.response.status = 201
 	  context.response.body = JSON.stringify(surveySch, null, 2)
@@ -129,7 +153,9 @@ router.get("/api/v1/surveys", async (context) => {
   }catch(err){
 	  console.log(err)
 	  context.response.status = 400
-	  context.response.body = JSON.stringify({ status: 'failed' })
+	  surveySch.response = 400
+	  surveySch.status = 'failed'
+	  context.response.body = JSON.stringify(surveySch)
   }
 });
 
@@ -142,15 +168,21 @@ router.get("/api/v1/surveys", async (context) => {
 router.get('/api/v1/surveys/:id', async (context) => {
   console.log("GET /api/surveys/:id");
   const token = context.request.headers.get("Authorization");
+  questionSch.links.self = `https://${context.request.url.host}${context.request.url.pathname}`
   try{
 	let data = { questions: await getSurveyQuestions(context.params.id) } 
-	data.submit = `https://${context.request.url.host}${context.request.url.pathname}`
-	console.log(data)
-	context.response.body = JSON.stringify(data, null, 2)
+	questionSch.links.submit = `https://${context.request.url.host}${context.request.url.pathname}`
+	  
+	questionSch.data = data
+	questionSch.errors = null
+	context.response.body = JSON.stringify(questionSch, null, 2)
   }catch(err){
 	console.log(err)
 	context.response.status = 400
-	context.response.body = JSON.stringify({ status: 'failed' })
+	questionSch.errorCode = 400
+	questionSch.error = err
+	questionSch.response = 'failed'
+	context.response.body = JSON.stringify(questionSch)
   }
 });
 
@@ -163,6 +195,7 @@ router.post('/api/v1/surveys/:id', async context => {
 	const credentials = extractCredentials(token);
 	const userid = await getUserId(credentials.user)
 	const surveyid = context.params.id
+	myresponsesPostSch.links.self = `https://${context.request.url.host}${context.request.url.pathname}`
 	try{
 		const valid = response(responses)
 		if(valid === false) throw response.errors
@@ -170,12 +203,20 @@ router.post('/api/v1/surveys/:id', async context => {
 		for(const response of responses){
 			await addResponse(userid, surveyid, response)
 		}
+		
+		
+		myresponsesPostSch.data = responses
+		myresponsesPostSch.status = 201
+		myresponsesPostSch.response = 'Responses added sucessfully added'
+		myresponsesPostSch.errors = null
 		context.response.status = 201
-		context.response.body = JSON.stringify({ status: 'questions sucessfully added' })
+		context.response.body = JSON.stringify(myresponsesPostSch)
 	}catch(err){
 		console.log(err)
 		context.response.status = 406
-		context.response.body = JSON.stringify({ status: 'INVALID OBJECT', err:response.errors })
+		myresponsesPostSch.response = 406
+		myresponsesPostSch.errors = response.errors
+		context.response.body = JSON.stringify(myresponsesPostSch)
 	}
 	
 });
@@ -197,27 +238,17 @@ router.get("/api/v1/accounts", async (context) => {
     console.log(credentials);
     const username = await login(credentials);
     console.log(`username: ${username}`);
-    context.response.body = JSON.stringify(
-      {
-        data: { username },
-      },
-      null,
-      2,
-    );
+    
+    accountsSch.links.self = `https://${context.request.url.host}${context.request.url.pathname}`
+    accountsSch.data = username
+	  
+    context.response.body = JSON.stringify(accountsSch,null,2,);
   } catch (err) {
     context.response.status = 401;
-    context.response.body = JSON.stringify(
-      {
-        errors: [
-          {
+    context.response.body = JSON.stringify({ errors:[{
             title: "401 Unauthorized.",
             detail: err.message,
-          },
-        ],
-      },
-      null,
-      2,
-    );
+          },],},null,2,);
   }
 });
 
@@ -228,19 +259,28 @@ router.post('/api/v1/accounts', async context => {
 	const body  = await context.request.body()
 	const data = await body.value
 	console.log(data)
+	myaccountsPostSch.links.self = `https://${context.request.url.host}${context.request.url.pathname}`
 	try{
 		const valid = creds(data)
 		if(valid === false) throw creds.errors
 		
 		await register(data)
+		myaccountsPostSch.data = data
+		myaccountsPostSch.status = 201
+	        myaccountsPostSch.response = 'Account created'
+	        myaccountsPostSch.errors = null
 		context.response.status = 201
-		context.response.body = JSON.stringify({ status: 'success', msg: 'account created' })	
+		console.log(myaccountsPostSch)
+		context.response.body = JSON.stringify(myaccountsPostSch)	
 	}catch(err){
 		console.log(err)
+		myaccountsPostSch.status = 406
+		myaccountsPostSch.response = 'Couldnt create account'
+		myaccountsPostSch.errors = creds.errors
 		context.response.status = 406
-		context.response.body = JSON.stringify({ status: 'failed', msg: "couldnt create account" })
+		console.log(myaccountsPostSch)
+		context.response.body = JSON.stringify(myaccountsPostSch, null, 2)
 	}
-	
 })
 
 

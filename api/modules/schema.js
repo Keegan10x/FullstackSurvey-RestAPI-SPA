@@ -86,16 +86,143 @@ export const response = ajv.compile({
 
 
 
-//Feedback
+
 export let surveySch = {
-		  name: 'surveys',
-		  desc: 'a list of all created survey',
+		  jsonapi: {
+			  version: '1.0'
+		  },
+		  methods: ['GET'],
+		  name: 'Surveys',
+		  desc: 'A list of all existing survey with submission links',
 		  schema: {
 			  id: 'number',
 			  usr: 'number',
 			  name: 'string',
 			  description: 'string',
 			  created: 'ISO8601 string',
-			  questions: 'number'
+			  type: 'survey',
+			  questions: 'number',		  
+			  href: 'string',
+			  avgScore: 'string'
 		  },
+		  links: {}
+	  }
+
+export let mysurveySch = {
+		  jsonapi: {
+			  version: '1.0'
+		  },
+		  methods: ['GET', 'POST'],
+		  name: 'Surveys',
+		  desc: 'A list of all my created surveys with add question links',
+		  schema: {
+			  id: 'number',
+			  usr: 'number',
+			  name: 'string',
+			  description: 'string',
+			  created: 'ISO8601 string',
+			  type: 'survey',
+			  questions: 'number',		  
+			  href: 'string',
+		  },
+		  links: {}
+	  }
+
+
+export let questionSch = {
+		  jsonapi: {
+			  version: '1.0'
+		  },
+		  methods: ['GET', 'POST'],
+		  name: 'Questions',
+		  desc: 'Getting all questions related to survey',
+		  schema: {
+			  id: 'number',
+			  title: 'string',
+			  description: 'string',
+			  type: 'question'
+		  },
+		  links: {}
+	  }
+
+
+
+export let accountsSch = {
+		  jsonapi: {
+			  version: '1.0'
+		  },
+		  methods: ['GET', 'POST'],
+		  name: 'Accounts',
+		  desc: 'Get logged in user',
+		  schema: {
+			  username: 'string',
+		  },
+		  links: {}
+	  }
+
+
+export let mysurveyPostSch = {
+	
+		  jsonapi: {
+			  version: '1.0'
+		  },
+	
+		  methods: ['GET', 'POST'],
+		  name: 'Surveys',
+		  desc: 'Posting surveys',
+	
+		  schema: {
+			  surveyName: 'string',
+			  surveyDescription: 'string',
+		  },
+	
+		  links: {}
+	  }
+
+
+export let myquestionsPostSch = {
+	
+		  jsonapi: {
+			  version: '1.0'
+		  },
+	
+		  methods: ['GET', 'POST'],
+		  name: 'Surveys',
+		  desc: 'Posting survey questions',
+	
+		  schema: [ {title:"string", description:"string"} ],		
+	
+		  links: {}
+	  }
+
+
+export let myresponsesPostSch = {
+	
+		  jsonapi: {
+			  version: '1.0'
+		  },
+	
+		  methods: ['GET', 'POST'],
+		  name: 'Responses',
+		  desc: 'Posting question responses',
+	
+		  schema: [ {questionId:"number", response:"number"} ],		
+	
+		  links: {}
+	  }
+
+
+export let myaccountsPostSch = {
+	
+		  jsonapi: {
+			  version: '1.0'
+		  },
+	
+		  methods: ['GET', 'POST'],
+		  name: 'Accounts',
+		  desc: 'Registering an account',
+	
+		  schema: {user: 'string', pass: 'string'},		
+	
+		  links: {}
 	  }
