@@ -127,36 +127,53 @@ router.post('/api/v1/mysurveys/:id', async context => {
 //get all existing surveys with completion links
 router.get("/api/v1/surveys", async (context) => {
   console.log("GET /api/surveys");
+  surveySch.links.self = `https://${context.request.url.host}${context.request.url.pathname}`
   const token = context.request.headers.get("Authorization");
   console.log(`auth: ${token}`)
-  const credentials = extractCredentials(token);
-  const userid = await getUserId(credentials.user)
-  let surveys = await getAllFrom('surveys')
-  surveySch.links.self = `https://${context.request.url.host}${context.request.url.pathname}`
-  try{
-	  console.log(surveys)
+
+  //if not logged in
+  if(!token){
+	  let surveys = await getAllFrom('surveys')
 	  for(const survey of surveys){
+		  survey.created = survey.created.toString().slice(4, 15)
 		  survey.type = 'survey'
 		  survey.questions = await getNumberOfQuestions(survey.id)
-		  if(await hasUserDone(userid, survey.id)){
-			  survey.avgScore = await getAverageScore(userid, survey.id)
-		  }else{
-			  survey.href = `https://${context.request.url.host}${context.request.url.pathname}/${survey.id}`
-		  }
-	
+		  survey.href = `https://${context.request.url.host}${context.request.url.pathname}/${survey.id}`
 	  }
-	  //console.log(surveys)
 	  surveySch.data = surveys
 	  context.response.status = 201
 	  context.response.body = JSON.stringify(surveySch, null, 2)
+		  
+  } else if(token){
+	  const credentials = extractCredentials(token);
+	  const userid = await getUserId(credentials.user)
+	  let surveys = await getAllFrom('surveys')
+	  try{
+		  console.log(surveys)
+		  for(const survey of surveys){
+			  survey.created = survey.created.toString().slice(4, 15)
+			  survey.type = 'survey'
+			  survey.questions = await getNumberOfQuestions(survey.id)
+			  if(await hasUserDone(userid, survey.id)){
+				  survey.avgScore = await getAverageScore(userid, survey.id)
+			  }else{
+				  survey.href = `https://${context.request.url.host}${context.request.url.pathname}/${survey.id}`
+			  }
+	
+		  }
+		  //console.log(surveys)
+		  surveySch.data = surveys
+		  context.response.status = 201
+		  context.response.body = JSON.stringify(surveySch, null, 2)
 	  
-  }catch(err){
-	  console.log(err)
-	  context.response.status = 400
-	  surveySch.response = 400
-	  surveySch.status = 'failed'
-	  context.response.body = JSON.stringify(surveySch)
-  }
+	  }catch(err){
+		  console.log(err)
+		  context.response.status = 400
+		  surveySch.response = 400
+		  surveySch.status = 'failed'
+		  context.response.body = JSON.stringify(surveySch)
+	  }
+  }  
 });
 
 
@@ -271,7 +288,7 @@ router.post('/api/v1/accounts', async context => {
 	        myaccountsPostSch.errors = null
 		context.response.status = 201
 		console.log(myaccountsPostSch)
-		context.response.body = JSON.stringify(myaccountsPostSch)	
+		context.response.body = JSON.stringify(myaccountsPostSch, null, 2)	
 	}catch(err){
 		console.log(err)
 		myaccountsPostSch.status = 406

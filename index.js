@@ -32,8 +32,9 @@ const app = new Application();
 app.use(async (context, next) => {
   console.log("middleware running");
   // if the call is to the API it must include the correct Content-Type
-	
-  if (context.request.url.pathname.includes("/api/v1") && !(context.request.url.pathname.includes("/api/v1/accounts") && context.request.method === 'POST')) {
+  //!(context.request.url.pathname.includes("/api/v1/surveys") && context.request.method === 'GET')
+  //!(context.request.url.pathname.includes("/api/v1/accounts") && context.request.method === 'POST')
+  if (context.request.url.pathname.includes("/api/v1") && !(context.request.url.pathname.includes("/api/v1/surveys") && context.request.method === 'GET') && !(context.request.url.pathname.includes("/api/v1/accounts") && context.request.method === 'POST')) {
     console.log("API CALL");
     console.log(context.request.headers.get("Content-Type"));
     context.response.headers.set("Content-Type", "application/vnd.api+json");
