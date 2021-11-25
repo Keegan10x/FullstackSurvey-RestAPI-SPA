@@ -60,12 +60,28 @@ function popSurveyFrags(node, obj){
 	const template = document.querySelector('template#surveys')
 	for(const survey of obj.data){
 		const fragment = template.content.cloneNode(true)
-		fragment.querySelector('h2').innerText = survey.name
-		fragment.querySelector('p').innerText = survey.description
-		fragment.querySelector('time').innerText = survey.created
-		fragment.querySelector('b').innerText = survey.questions
-		if(survey.href){ fragment.querySelector('a').innerText = survey.href
-		}else fragment.querySelector('a').innerText = survey.avgScore
+		
+		const section = document.createElement('section')
+		const h2 = document.createElement('h2')
+		const time = document.createElement('time')
+		const descPara = document.createElement('p')
+		const questionPara = document.createElement('p')
+		const link = document.createElement('a')
+		link.innerText = 'TAKE SURVEY'
+		
+		h2.innerText = survey.name
+		time.innerText = `Date Created: ${survey.created}`
+		descPara.innerText = survey.description
+		questionPara.innerText = `Questions: ${survey.questions}`
+		if(survey.href){ link.href = survey.href
+		}else link.innerText = survey.avgScore
+		
+		section.appendChild(h2)
+		section.appendChild(time)
+		section.appendChild(descPara)
+		section.appendChild(questionPara)
+		section.appendChild(link)
+		fragment.appendChild(section)
 		node.appendChild(fragment)
 	}
 }
