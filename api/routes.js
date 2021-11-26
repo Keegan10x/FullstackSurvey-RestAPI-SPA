@@ -21,9 +21,11 @@ router.post("/api/v1/mysurveys", async (context) => {
   const token = context.request.headers.get("Authorization");
   console.log(`auth: ${token}`)
   //context.response.headers.set("Content-Type", "application/vnd.api+json")
-
+  
   const body = await context.request.body();
-  let data = await body.value;
+  const data = await body.value;
+  console.log(data)
+  
   const credentials = extractCredentials(token)
   const now = new Date().toISOString()
   const date = now.slice(0,19).replace('T', ' ')
@@ -72,7 +74,7 @@ router.get("/api/v1/mysurveys", async (context) => {
 	  }
 	  
 	  mysurveySch.data = surveys
-	  console.log(surveys)
+	  //console.log(surveys)
 	  context.response.status = 201
 	  context.response.body = JSON.stringify(mysurveySch, null, 2)
 	  
@@ -149,7 +151,7 @@ router.get("/api/v1/surveys", async (context) => {
 	  const userid = await getUserId(credentials.user)
 	  let surveys = await getAllFrom('surveys')
 	  try{
-		  console.log(surveys)
+		  //console.log(surveys)
 		  for(const survey of surveys){
 			  survey.created = survey.created.toString().slice(4, 15)
 			  survey.type = 'survey'

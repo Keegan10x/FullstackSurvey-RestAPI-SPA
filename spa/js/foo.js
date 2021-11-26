@@ -13,7 +13,7 @@ export async function setup(node) {
   try {
     console.log(node);
     document.querySelector("header p").innerText = "Foobar";
-    customiseNavbar(["home", "logout", "foo"]);
+    customiseNavbar(["home", "logout", "foo", "surveyQuestions"]);
     if (localStorage.getItem("authorization") === null) loadPage("login");
     // there is a token in localstorage
     node.querySelector("form").addEventListener("submit", await uploadData);

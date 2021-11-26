@@ -45,7 +45,7 @@ export async function getNumberOfQuestions(surveyid){
 export async function getAllFrom(table){
 	const sql = `SELECT * FROM ${table}`
 	const result = await db.query(sql)
-	console.log(result)
+	//console.log(result)
 	return result
 }
 

@@ -7,7 +7,7 @@ export async function setup(node) {
   try {
     console.log(node);
     document.querySelector("header p").innerText = "Home";
-    customiseNavbar(["home", "foo", "logout"]); // navbar if logged in
+    customiseNavbar(["home", "foo", "logout", "surveyQuestions"]); // navbar if logged in
     const token = localStorage.getItem("authorization");
     console.log(token);
     if (token === null) customiseNavbar(["home", "register", "login"]); //navbar if logged out
@@ -73,7 +73,7 @@ function popSurveyFrags(node, obj){
 		time.innerText = `Date Created: ${survey.created}`
 		descPara.innerText = survey.description
 		questionPara.innerText = `Questions: ${survey.questions}`
-		if(survey.href){ link.href = survey.href
+		if(survey.href){ link.href = `/surveyQuestions?survey=${survey.id}`
 		}else link.innerText = survey.avgScore
 		
 		section.appendChild(h2)
