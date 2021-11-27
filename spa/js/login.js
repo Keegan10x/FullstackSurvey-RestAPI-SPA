@@ -33,7 +33,7 @@ async function login() {
     localStorage.setItem("username", response.json.data.username);
     localStorage.setItem("authorization", token);
     showMessage(`you are logged in as ${response.json.data.username}`);
-    await loadPage("foo");
+    await loadPage("home");
   } else {
     document.querySelector('input[name="pass"]').value = "";
     showMessage(response.json.errors[0].detail);

@@ -6,6 +6,7 @@
 		<title>Single Page App</title>
 		<link rel="stylesheet" href="style/main.css">
 		<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.4.0/showdown.min.js"></script>
 		<script type="module" src="./router.js" defer></script>
 	</head>
 	<body>
@@ -18,7 +19,7 @@
 			<ul>
 				<li><a href="/">Home</a></li>
 				<li><a href="/register">Register</a></li>
-				<li><a href="/foo">Foo</a></li>
+				<li><a href="/newsurvey">New survey</a></li>
 				<li><a href="/login">Log in</a></li>
 				<li><a href="/logout">Log out</a></li>
 			</ul>
@@ -51,29 +52,24 @@
 	<template id="logout">
 			<p>Do you want to log out?</p>
 			<p><button>OK</button><button>Cancel</button></p>
-	</template>
-	<template id="foo">
-		<form name="upload" method="post">
-			<p><label for="pass">Choose a file</label><br /><input type="file" name="file" /></p>
-			<p><button type="submit">Upload</button></p>
-		</form>
-	</template>
-	
+		
 	
 	<!-- My new templates -->
-	<template id="newSuervey">
-		<form name="createSurvey" method="post">
-			
-			<p><input type="text" name="suerveyName" /></p>
-			<p><input type="textarea" name="surveyDescription" /></p>
-			<p><input type="text" name="username" /></p>
-			<p><input type="date" name="dateCreate" /></p>
-			
-			
-			<p><button type="submit">Upload</button></p>
-		</form>
-	</template>
 
+	</template>
+	<template id="newsurvey">
+		<form name="upload" method="post">
+			<p><label for="surveyName">Survey Name</label><br /><input type="text" name="surveyName" required/></p>
+			<p><label for="description">Survey Description</label><br /><textarea name="description" maxlength="280" required></textarea></p>
+			<input type="text" name="surveyDescription" hidden/>
+			<p><button type="submit">Create</button></p>
+		</form>
+		<!-- Render Markdown -->
+		<h3>Markdown Description</h3>
+		<article id="mkdn"></article>
+	</template>
+	
+	
 	
 	<template id="surveys">
 		<hr />
@@ -84,23 +80,5 @@
 	
 	</template>
 	
-	
-	<!-- My new templates 
-
-	
-
-
-
-`	-->
-	
-	
-	<!--
-	<template id="showSuerveys">
-
-			<p></p>
 		
-	</template>
-	-->
-	
-	
 </html>
