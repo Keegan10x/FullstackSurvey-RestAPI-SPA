@@ -28,4 +28,45 @@ export async function setup(node) {
 
 async function getMySurveys(node){
 	console.log("GETTING MY SURVEYS")
+	const uri = "/api/v1/mysurveys"
+	const options = {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/vnd.api+json",
+			"Authorization": localStorage.getItem("authorization"),
+		},
+	}
+	const rsp = await fetch(uri, options)
+	const surveyObj = await rsp.json()
+	console.log(surveyObj)
+	
+	
+	
+	//create dom
+	const template = document.querySelector('template#mySurveys')
+	const fragment = template.content.cloneNode(true)
+	for(const survey of surveyObj.data){
+		const section = document.createElement('section')
+		
+		const name = document.createElement('h2')
+		const created = document.createElement('time')
+		const questions = document.createElement('p')
+		const link = document.createElement('a')
+		link.innerText = 'ADD QUESTIONS'
+		
+		name.innerText = survey.name
+		created.innerText = `Date Created: ${survey.created}`
+		questions.innerText = `Questions: ${survey.questions}`
+		link.href = `/addQuestions?mysurvey=${survey.id}`
+		
+		section.appendChild(document.createElement('hr'))
+		section.appendChild(name)
+		section.appendChild(created)
+		section.appendChild(questions)
+		section.appendChild(link)
+		
+		fragment.appendChild(section)
+		//fragment.appendChild(document.createElement('hr'))
+	}
+	node.appendChild(fragment)
 }
