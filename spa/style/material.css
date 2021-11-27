@@ -155,8 +155,12 @@ main p {
 
 /* =========== FORM =========== */
 
-form p {
-	margin-top: 1em;
+input[type="submit"] {
+	margin-top: 25px;
+}
+
+form {
+	margin-bottom: 10px;
 }
 
 input[type="text"], input[type="email"], input[type="password"], textarea, select {
@@ -188,6 +192,11 @@ button {
 button:hover {
 	color: grey;
   background-color: white;
+}
+
+
+input[type="radio"] {
+	display: block;
 }
 
 /* ========== FOOTER ========== */

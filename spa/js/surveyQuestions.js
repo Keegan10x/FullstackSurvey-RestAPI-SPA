@@ -51,8 +51,8 @@ function popSurveyForm(node, obj){
 	const fragment = template.content.cloneNode(true)
 	
 	const form = document.createElement('form')
-		for(const qst of obj.data.questions){
-			 
+		for(const qst of obj.data.questions){	 
+			
 			 const fieldset = document.createElement('fieldset') 
 			 const legend = document.createElement('legend')
 			 const dscr = document.createElement('p')
@@ -79,32 +79,32 @@ function popSurveyForm(node, obj){
 			 radio1.setAttribute('name', qst.title)
 			 radio1.setAttribute('value', "1")
 			 radio1.setAttribute('id', qst.id)
-			 lb1.innerText = 'Rank 1'
+			 lb1.innerText = 'Strongly Disagree (1 point)'
 			
 			 radio2.setAttribute('type', 'radio')
 			 radio2.setAttribute('name', qst.title)
 			 radio2.setAttribute('value', "2")
 			 radio2.setAttribute('id', qst.id)
-			 lb2.innerText = 'Rank 2'
+			 lb2.innerText = 'Disagree (2 points)'
 			
 			
 			 radio3.setAttribute('type', 'radio')
 			 radio3.setAttribute('name', qst.title)
 			 radio3.setAttribute('value', "3")
 			 radio3.setAttribute('id', qst.id)
-			 lb3.innerText = 'Rank 3'
+			 lb3.innerText = 'Neither agree nor disagree (3 points)'
 			
 			 radio4.setAttribute('type', 'radio')
 			 radio4.setAttribute('name', qst.title)
 			 radio4.setAttribute('value', "4")
 			 radio4.setAttribute('id', qst.id)
-			 lb4.innerText = 'Rank 4'
+			 lb4.innerText = 'Agree (4 points)'
 			
 			 radio5.setAttribute('type', 'radio')
 			 radio5.setAttribute('name', qst.title)
 			 radio5.setAttribute('value', "5")
 			 radio5.setAttribute('id', qst.id)
-			 lb5.innerText = 'Rank 5'
+			 lb5.innerText = 'Strongly agree (5 points)'
 			
 			 fieldset.appendChild(legend)
 			 fieldset.appendChild(dscr)

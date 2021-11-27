@@ -12,8 +12,10 @@ export async function getUserId(user){
 
 
 export async function saveSurvey(data){
+	console.log(data.surveyDescription)
+	
 	const sql = `INSERT INTO surveys(name, description, usr, created)\
-VALUES("${data.surveyName}", "${data.surveyDescription}", ${data.userid}, "${data.created}")`
+VALUES("${data.surveyName}", '${data.surveyDescription}', ${data.userid}, "${data.created}")`
 	console.log(sql)
 	await db.query(sql)
 }
