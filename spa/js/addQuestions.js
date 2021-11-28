@@ -1,3 +1,5 @@
+window.myGlobalVariable = []
+
 import {
   customiseNavbar,
   file2DataURI,
@@ -17,16 +19,17 @@ export async function setup(node) {
     createForm(node)
 	  
     await addQuestions(node)
-
+  
+    
 
     const questions = []
     const descriptions = []
     
-    node.append(document.createElement('article'))
-    node.append(document.createElement('main'))
+    //node.append(document.createElement('article'))
+    //node.append(document.createElement('main'))
 	  
     //Handle dynamic question title creation and deletion.	  
-    node.querySelector('input').addEventListener('keyup', (event)=>{
+    node.querySelector('input[name="title"]').addEventListener('keyup', (event)=>{
 	    const template = document.querySelector('template#surveyQuestions')
 	    const fragment = template.content.cloneNode(true)
 	    if(event.key === 'Enter') {
@@ -61,19 +64,29 @@ export async function setup(node) {
     node.querySelector('textarea').addEventListener('keyup', (event)=>{
 	    const template = document.querySelector('template#surveyQuestions')
 	    const fragment = template.content.cloneNode(true)
+	    //markdown line below
+	    let converter
 	    if(event.key === 'Enter') {
 	    const section = document.createElement('section')
-	    section.innerText = event.target.value
+	    //section.innerText = event.target.value
 	    const str = event.target.value.replace('\n', '')
 	    console.log("ADDING: ", str)
-            descriptions.push(str)
+		    
+	    //markdown stuff
+	    converter = new showdown.Converter({'tables': true, 'tasklists': true, 'strikethrough': true})
+            const options = converter.getOptions()
+	    const markdown = str
+	    const html = converter.makeHtml(markdown)
+            section.innerHTML = html    	    
+            descriptions.push(html)  
+		    
 	    section.addEventListener('click', (event)=>{
 		    const index = [...event.target.parentNode.children]
 		    .indexOf(event.target)
 		    const deleted = document.querySelector('main').removeChild(section)
 		    console.log("DELETING: ", deleted.innerText)
 		    
-		    const dscIdx = descriptions.indexOf(deleted.innerText)
+		    const dscIdx = descriptions.indexOf(deleted.innerHTML)
 		    descriptions.splice(dscIdx, 1);
 		    console.log(descriptions)
 		    //console.log(`item at index: ${index}`)
@@ -95,6 +108,7 @@ export async function setup(node) {
   }
 }
 
+
 function createForm(node){
 	const template = document.querySelector('template#addQuestions')
 	const fragment = template.content.cloneNode(true)
@@ -102,10 +116,12 @@ function createForm(node){
 	const qstLabel = document.createElement('label')
 	qstLabel.innerText = 'Question Title'
 	const question = document.createElement('input')
+	question.setAttribute('name', 'title')
+	question.attributes["required"] = "required"
 	const dscrLabel = document.createElement('label')
 	dscrLabel.innerText = 'Question Description'
 	const description = document.createElement('textarea')
-	
+	description.attributes["required"] = "required"
 	qstLabel.appendChild(document.createElement('br'))
 	
 	fragment.appendChild(qstLabel)
