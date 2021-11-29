@@ -1,4 +1,10 @@
-window.myGlobalVariable = []
+window.myGlobalVariable = {
+	questions:[],
+	descriptions:[],
+	counter: 0
+}
+
+
 
 import {
   customiseNavbar,
@@ -8,6 +14,8 @@ import {
   showMessage,
 } from "../util.js";
 
+
+
 export async function setup(node) {
   console.log("surveyQuetions: setup");
   try {
@@ -16,28 +24,43 @@ export async function setup(node) {
     customiseNavbar(["home", "logout", "newsurvey"]);
     if (localStorage.getItem("authorization") === null) loadPage("login");
     // there is a token in localstorage
-    createForm(node)
-	  
-    await addQuestions(node)
-  
-    
-
-    const questions = []
-    const descriptions = []
     
    
+	  
+    createForm(node)
+	
+	  
+    await addQuestions(node) 
+   
     //ADD TITLE & DESCRIPTION
-    let counter = 0
+        
+    
     node.querySelector('button[name="add"]').addEventListener('click', (event)=>{
 	if(!document.querySelector('textarea').value && !document.querySelector('input[name="title"]').value){
 		console.warn('Missing Fields')
 	}else if(document.querySelector('textarea').value && document.querySelector('input[name="title"]').value){
-		counter ++
-		console.log(counter)
+		window.myGlobalVariable.counter ++
+		
+		//this is the db.js button script
+		//had trouble trying to reference its local location. Saved it to discord to generate a URL
+		//file contents exactly the same as ./button.js 
+		const btnscr = "https://cdn.discordapp.com/attachments/814265938832654357/915002023462727750/button.js"
+		
+		const scrp =  document.createElement('script')
+		scrp.setAttribute('src', btnscr)
+		
+		const removebutton =  document.createElement('button')
+		removebutton.setAttribute('name', 'remove')
+		removebutton.setAttribute('id', "rb"+window.myGlobalVariable.counter.toString())
+		removebutton.setAttribute('onclick', "getId(this)")
+		removebutton.innerText = 'REMOVE'
+		
+
+		console.log(window.myGlobalVariable.counter)
 		const template = document.querySelector('template#surveyQuestions')
 		const fragment = template.content.cloneNode(true)
 		const article = document.createElement('article')
-		article.setAttribute('id', `${counter.toString()}`)
+		article.setAttribute('id', `${window.myGlobalVariable.counter.toString()}`)
 		
 		const h2 = document.createElement('h2')
 	
@@ -49,11 +72,11 @@ export async function setup(node) {
 		const options = converter.getOptions()
 		const html = converter.makeHtml(markdown)
 		section.innerHTML = html
-		descriptions.push(html)
+		window.myGlobalVariable.descriptions.push(html)
 		
 		const title = document.querySelector('input[name="title"]').value
 		h2.innerText = title
-		questions.push(title)
+		window.myGlobalVariable.questions.push(title)
 		
 		document.querySelector('textarea').value = ''    
 		document.querySelector('textarea').select()
@@ -62,13 +85,25 @@ export async function setup(node) {
 		document.querySelector('input[name="title"]').select()
 		article.appendChild(h2)
 		article.appendChild(section)
-		document.querySelector('main').appendChild(article)    
-		console.log(questions)
-		console.log(descriptions)
+		article.appendChild(removebutton)
+		document.querySelector('main').appendChild(article)
+		document.querySelector('main').appendChild(scrp)
+		console.log(window.myGlobalVariable.questions)
+		console.log(window.myGlobalVariable.descriptions)
+		
+		//removebutton.addEventListener('click', ()=>{
+		//	const ht = document.querySelector('button[name="remove"]').id
+		//	console.log(ht)
+		//})
 	}
     })
-	
+
+    
+	  
     //Remove titla & description	  
+    
+    
+    /*		  
     node.querySelector('button[name="remove"]').addEventListener('click', (event)=>{
 	   if(questions.length === 0 && descriptions.length === 0){
 		   console.warn("NO QUESTIONS TO REMOVE")
@@ -91,7 +126,7 @@ export async function setup(node) {
 		   console.log(counter)
 	   }
     })
-     
+     */
 	  
 	  	  
     //node.querySelector("form").addEventListener("submit", await respond);
@@ -129,9 +164,7 @@ function createForm(node){
 	addbutton.setAttribute('name', 'add')
 	addbutton.innerText = 'ADD'
 	
-	const removebutton =  document.createElement('button')
-	removebutton.setAttribute('name', 'remove')
-	removebutton.innerText = 'REMOVE'
+	
 	
 	
 	const submit =  document.createElement('input')
@@ -140,7 +173,7 @@ function createForm(node){
 	
 	node.appendChild(fragment)
 	node.appendChild(addbutton)
-	node.appendChild(removebutton)
+
 	node.appendChild(submit)
 }
 

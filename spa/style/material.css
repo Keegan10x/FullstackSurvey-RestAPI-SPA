@@ -199,4 +199,11 @@ input[type="radio"] {
 	display: block;
 }
 
+
+button{
+	display: flex;
+  justify-content: center; /* horizontal */
+  align-items: left;
+}
+
 /* ========== FOOTER ========== */
