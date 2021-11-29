@@ -25,81 +25,73 @@ export async function setup(node) {
     const questions = []
     const descriptions = []
     
-    //node.append(document.createElement('article'))
-    //node.append(document.createElement('main'))
-	  
-    //Handle dynamic question title creation and deletion.	  
-    node.querySelector('input[name="title"]').addEventListener('keyup', (event)=>{
-	    const template = document.querySelector('template#surveyQuestions')
-	    const fragment = template.content.cloneNode(true)
-	    if(event.key === 'Enter') {
-	    const name = event.target.value
-	    const li = document.createElement('li')
-	    li.innerText = event.target.value
-	    console.log("ADDING: ", event.target.value)
-            questions.push(event.target.value)
-	    li.addEventListener('click', (event)=>{
-		    const index = [...event.target.parentNode.children]
-		    .indexOf(event.target)
-		    const deleted = document.querySelector('article').removeChild(li)
-		    console.log("DELETING: ", deleted.innerText)
-		    
-		    const qIdx = questions.indexOf(deleted.innerText)
-		    questions.splice(qIdx, 1);
-		    console.log(questions)
-		    //console.log(`item at index: ${index}`)
-		    //document.querySelector('article').removeChild(li)
-	    })
-	    //const ol = document.createElement('ol')
-	    event.target.value = ''
-	    event.target.select()
-	    document.querySelector('article').appendChild(li)
-	    console.log(questions)
-	  }
+   
+    //ADD TITLE & DESCRIPTION
+    let counter = 0
+    node.querySelector('button[name="add"]').addEventListener('click', (event)=>{
+	if(!document.querySelector('textarea').value && !document.querySelector('input[name="title"]').value){
+		console.warn('Missing Fields')
+	}else if(document.querySelector('textarea').value && document.querySelector('input[name="title"]').value){
+		counter ++
+		console.log(counter)
+		const template = document.querySelector('template#surveyQuestions')
+		const fragment = template.content.cloneNode(true)
+		const article = document.createElement('article')
+		article.setAttribute('id', `${counter.toString()}`)
+		
+		const h2 = document.createElement('h2')
+	
+		let converter
+		const section = document.createElement('section')
+		const markdown = document.querySelector('textarea').value.replace('\n', '')
+		//markdown
+		converter = new showdown.Converter({'tables': true, 'tasklists': true, 'strikethrough': true})
+		const options = converter.getOptions()
+		const html = converter.makeHtml(markdown)
+		section.innerHTML = html
+		descriptions.push(html)
+		
+		const title = document.querySelector('input[name="title"]').value
+		h2.innerText = title
+		questions.push(title)
+		
+		document.querySelector('textarea').value = ''    
+		document.querySelector('textarea').select()
+
+		document.querySelector('input[name="title"]').value = ''
+		document.querySelector('input[name="title"]').select()
+		article.appendChild(h2)
+		article.appendChild(section)
+		document.querySelector('main').appendChild(article)    
+		console.log(questions)
+		console.log(descriptions)
+	}
     })
-    
-	  
-	  
-    //Handle dynamic question description creation and deletion.	  
-    node.querySelector('textarea').addEventListener('keyup', (event)=>{
-	    const template = document.querySelector('template#surveyQuestions')
-	    const fragment = template.content.cloneNode(true)
-	    //markdown line below
-	    let converter
-	    if(event.key === 'Enter') {
-	    const section = document.createElement('section')
-	    //section.innerText = event.target.value
-	    const str = event.target.value.replace('\n', '')
-	    console.log("ADDING: ", str)
-		    
-	    //markdown stuff
-	    converter = new showdown.Converter({'tables': true, 'tasklists': true, 'strikethrough': true})
-            const options = converter.getOptions()
-	    const markdown = str
-	    const html = converter.makeHtml(markdown)
-            section.innerHTML = html    	    
-            descriptions.push(html)  
-		    
-	    section.addEventListener('click', (event)=>{
-		    const index = [...event.target.parentNode.children]
-		    .indexOf(event.target)
-		    const deleted = document.querySelector('main').removeChild(section)
-		    console.log("DELETING: ", deleted.innerText)
-		    
-		    const dscIdx = descriptions.indexOf(deleted.innerHTML)
-		    descriptions.splice(dscIdx, 1);
-		    console.log(descriptions)
-		    //console.log(`item at index: ${index}`)
-		    //document.querySelector('article').removeChild(li)
-	    })
-	    //const ol = document.createElement('ol')
-	    event.target.value = ''
-	    event.target.select()
-	    document.querySelector('main').appendChild(section)
-	    console.log(descriptions)
-	  }
+	
+    //Remove titla & description	  
+    node.querySelector('button[name="remove"]').addEventListener('click', (event)=>{
+	   if(questions.length === 0 && descriptions.length === 0){
+		   console.warn("NO QUESTIONS TO REMOVE")
+	   }else if(questions.length > 0 && descriptions.length > 0){
+		   const deleted = document.getElementById(counter.toString())
+		   const title = deleted.querySelector('h2').innerText
+		   const dscr = deleted.querySelector('section').innerHTML
+
+		   const tIdx = questions.indexOf(title)
+		   questions.splice(tIdx, 1)
+	    
+		   const dIdx = descriptions.indexOf(dscr)
+		   descriptions.splice(dIdx, 1)
+   
+		   console.log(questions)
+		   console.log(descriptions)
+		   deleted.parentNode.removeChild(deleted)
+		   //console.log(deleted)
+		   counter --
+		   console.log(counter)
+	   }
     })
-	  
+     
 	  
 	  	  
     //node.querySelector("form").addEventListener("submit", await respond);
@@ -132,8 +124,24 @@ function createForm(node){
 	
 	fragment.appendChild(dscrLabel)
 	fragment.appendChild(description)
-
+	
+	const addbutton =  document.createElement('button')
+	addbutton.setAttribute('name', 'add')
+	addbutton.innerText = 'ADD'
+	
+	const removebutton =  document.createElement('button')
+	removebutton.setAttribute('name', 'remove')
+	removebutton.innerText = 'REMOVE'
+	
+	
+	const submit =  document.createElement('input')
+	submit.setAttribute('type', 'submit')
+	submit.innerText = 'SUBMIT'
+	
 	node.appendChild(fragment)
+	node.appendChild(addbutton)
+	node.appendChild(removebutton)
+	node.appendChild(submit)
 }
 
 
