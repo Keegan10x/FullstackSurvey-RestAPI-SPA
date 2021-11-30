@@ -73,7 +73,7 @@ function popSurveyForm(node, obj){
 			 const radio5 = document.createElement('input')
 
 			 legend.innerText = qst.title
-			 dscr.innerText = qst.description
+			 dscr.innerHTML = qst.description
 			
 			 radio1.setAttribute('type', 'radio')
 			 radio1.setAttribute('name', qst.title)
@@ -150,8 +150,8 @@ async function respond(event) {
   const elems = []
   for(const qst of questions){
 	  const element = document.querySelector(`input[id="${qst.id}"]:checked`)
-	  //console.log(element.name)
-	  elems.push({questionId: parseInt(element.id), response: parseInt(element.value)})
+	  console.log("logging question id", qst.id)
+	  elems.push({questionId: parseInt(qst.id), response: parseInt(element.value)})
 	  //console.log()
   }
  

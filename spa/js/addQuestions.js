@@ -30,7 +30,7 @@ export async function setup(node) {
     createForm(node)
 	
 	  
-    await addQuestions(node) 
+    
    
     //ADD TITLE & DESCRIPTION
         
@@ -86,54 +86,62 @@ export async function setup(node) {
 		article.appendChild(h2)
 		article.appendChild(section)
 		article.appendChild(removebutton)
-		document.querySelector('main').appendChild(article)
-		document.querySelector('main').appendChild(scrp)
+		
+		document.getElementById("qcards").appendChild(article)
+		document.getElementById("qcards").appendChild(scrp)
 		console.log(window.myGlobalVariable.questions)
 		console.log(window.myGlobalVariable.descriptions)
 		
-		//removebutton.addEventListener('click', ()=>{
-		//	const ht = document.querySelector('button[name="remove"]').id
-		//	console.log(ht)
-		//})
+		
+		
+		
+		    
 	}
     })
 
-    
-	  
-    //Remove titla & description	  
-    
-    
-    /*		  
-    node.querySelector('button[name="remove"]').addEventListener('click', (event)=>{
-	   if(questions.length === 0 && descriptions.length === 0){
-		   console.warn("NO QUESTIONS TO REMOVE")
-	   }else if(questions.length > 0 && descriptions.length > 0){
-		   const deleted = document.getElementById(counter.toString())
-		   const title = deleted.querySelector('h2').innerText
-		   const dscr = deleted.querySelector('section').innerHTML
-
-		   const tIdx = questions.indexOf(title)
-		   questions.splice(tIdx, 1)
-	    
-		   const dIdx = descriptions.indexOf(dscr)
-		   descriptions.splice(dIdx, 1)
-   
-		   console.log(questions)
-		   console.log(descriptions)
-		   deleted.parentNode.removeChild(deleted)
-		   //console.log(deleted)
-		   counter --
-		   console.log(counter)
-	   }
-    })
-     */
-	  
-	  	  
+        
+    node.querySelector('button[name="submit"]').addEventListener('click', await send)	  
     //node.querySelector("form").addEventListener("submit", await respond);
   } catch (err) {
     console.error(err);
   }
 }
+
+async function send(){
+	console.log("SUBMITTING")
+	    
+	    const postQuestions = []
+		for(const index in window.myGlobalVariable.questions){
+		postQuestions.push({ title: window.myGlobalVariable.questions[index], description: window.myGlobalVariable.descriptions[index] })
+	    }
+	    
+	    const uriParams = new URLSearchParams(window.location.search)
+	    const surveyid = uriParams.get('mysurvey')
+	    const uri = `/api/v1/mysurveys/${surveyid}`
+	    const auth = localStorage.getItem("authorization")
+	    
+	    const options = {
+		    method: "POST",
+		    headers: {
+			    "Content-Type": "application/vnd.api+json",
+			    "Authorization": auth
+		    },
+		    body: JSON.stringify(postQuestions)
+		    
+	    }
+	    
+	    try{
+		    const response = await fetch(uri, options)
+		    const json = await response.json()
+		    console.log(json)
+	    }catch(err){
+		    console.log(err)
+	    }finally{
+		 loadPage("home")   
+	    }
+}
+
+
 
 
 function createForm(node){
@@ -167,22 +175,14 @@ function createForm(node){
 	
 	
 	
-	const submit =  document.createElement('input')
-	submit.setAttribute('type', 'submit')
+	const submit = document.createElement('button')
+	submit.setAttribute('name', 'submit')
 	submit.innerText = 'SUBMIT'
 	
 	node.appendChild(fragment)
 	node.appendChild(addbutton)
 
 	node.appendChild(submit)
-}
-
-
-async function addQuestions(node){
-	console.log('ADDING QUESTIONS')
-	const uriParams = new URLSearchParams(window.location.search)
-	const surveyid = uriParams.get('mysurvey')
-	console.log(surveyid)
 }
 
 
