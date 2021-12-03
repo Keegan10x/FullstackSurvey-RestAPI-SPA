@@ -13,7 +13,6 @@ import { surveySch, mysurveySch, questionSch, accountsSch, mysurveyPostSch, myqu
 const router = new Router();
 
 // assignment end-points
-
 //Feature 1
 //Creates survery and insert to DB
 router.post("/api/v1/mysurveys", async (context) => {
@@ -116,7 +115,7 @@ router.post('/api/v1/mysurveys/:id', async context => {
 		console.log(err)
 		context.response.status = 406
 		myquestionsPostSch.status = 406
-		myquestionsPostSch.errors = question.error
+		myquestionsPostSch.errors = question.errors
 		myquestionsPostSch.response = 'INVALID OBJECT'
 		context.response.body = JSON.stringify(myquestionsPostSch)
 	}
