@@ -108,6 +108,10 @@ export async function setup(node) {
 }
 
 async function send(){
+	if(window.myGlobalVariable.questions.length === 0 && window.myGlobalVariable.descriptions.length === 0){
+		console.warn("Nothing to submit")
+	}else if(window.myGlobalVariable.questions.length > 0 && window.myGlobalVariable.descriptions.length > 0){
+	
 	console.log("SUBMITTING")
 	    
 	    const postQuestions = []
@@ -139,6 +143,7 @@ async function send(){
 	    }finally{
 		 loadPage("home")   
 	    }
+	}
 }
 
 

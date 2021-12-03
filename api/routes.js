@@ -7,7 +7,7 @@ import { Router } from "https://deno.land/x/oak@v6.5.1/mod.ts";
 
 import { extractCredentials, saveFile } from "./modules/util.js";
 import { login, register } from "./modules/accounts.js";
-import { getUserId, saveSurvey, getMySurveys, addQuestion, getNumberOfQuestions, getAllFrom, getSurveyQuestions, addResponse, hasUserDone, getAverageScore} from "./modules/dbinterface.js";
+import { getUserId, saveSurvey, getMySurveys, addQuestion, getNumberOfQuestions, getAllFrom, getSurveyQuestions, addResponse, hasUserDone, getAverageScore, getRoles} from "./modules/dbinterface.js";
 import { survey, question, response, creds } from './modules/schema.js'
 import { surveySch, mysurveySch, questionSch, accountsSch, mysurveyPostSch, myquestionsPostSch, myresponsesPostSch, myaccountsPostSch} from './modules/schema.js'
 const router = new Router();
@@ -143,12 +143,18 @@ router.get("/api/v1/surveys", async (context) => {
 		  survey.href = `https://${context.request.url.host}${context.request.url.pathname}/${survey.id}`
 	  }
 	  surveySch.data = surveys
+	  surveySch.admin = false
 	  context.response.status = 201
 	  context.response.body = JSON.stringify(surveySch, null, 2)
 		  
   } else if(token){
 	  const credentials = extractCredentials(token);
 	  const userid = await getUserId(credentials.user)
+	  const role = await getRoles(userid)
+	  console.log('############# SHOWING ROLES', role)
+	  surveySch.admin = false
+	  if(role === 'admin') surveySch.admin = true 
+	  
 	  let surveys = await getAllFrom('surveys')
 	  try{
 		  //console.log(surveys)
@@ -240,6 +246,8 @@ router.post('/api/v1/surveys/:id', async context => {
 	
 });
 
+
+//Template routes
 
 router.get("/", async (context) => {
   console.log("GET /");

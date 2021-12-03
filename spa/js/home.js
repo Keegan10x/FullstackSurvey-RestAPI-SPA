@@ -1,10 +1,14 @@
 /* home.js */
 
+
+
 import { customiseNavbar } from "../util.js";
 
 export async function setup(node) {
   console.log("HOME: setup");
   try {
+    let admin = await addSurvey(node)
+    console.log("ADMIN IS", admin) 
     console.log(node);
     document.querySelector("header p").innerText = "Home";
     customiseNavbar(["home", "newsurvey", "logout", "surveyQuestions", "mySurveys"]); // navbar if logged in
@@ -12,10 +16,12 @@ export async function setup(node) {
     console.log(token);
     if (token === null) customiseNavbar(["home", "register", "login"]); //navbar if logged out
 
+    if (!admin) customiseNavbar(["home", "logout", "surveyQuestions"]); 
+	  
     //call functions here
     console.log('SURVEYS')
     //await addContent(node)
-    await addSurvey(node)
+    //await addSurvey(node)
   } catch (err) {
     console.error(err);
   }
@@ -39,6 +45,7 @@ async function addSurvey(node){
 		const surveyObj = await rsp.json()
 		console.log(surveyObj)
 		popSurveyFrags(node, surveyObj)
+		return surveyObj.admin
 	}
 	
 	//IF UNAUTHORIZED
@@ -53,6 +60,8 @@ async function addSurvey(node){
 		const surveyObj = await rsp.json()
 		console.log(surveyObj)
 		popSurveyFrags(node, surveyObj)
+		//return surveyObj.admin
+		return false
 	}
 }
 

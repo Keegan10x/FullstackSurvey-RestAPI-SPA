@@ -27,7 +27,7 @@ export async function login(credentials) {
 export async function register(credentials) {
   credentials.pass = await hash(credentials.pass, salt);
   const sql =
-    `INSERT INTO accounts(user, pass) VALUES("${credentials.user}", "${credentials.pass}")`;
+    `INSERT INTO accounts(user, pass, role) VALUES("${credentials.user}", "${credentials.pass}", 2)`;
   console.log(sql);
   const records = await db.query(sql);
   return true;

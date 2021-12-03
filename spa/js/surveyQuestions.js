@@ -13,7 +13,7 @@ export async function setup(node) {
   try {
     console.log(node);
     document.querySelector("header p").innerText = "Survey Questions";
-    customiseNavbar(["home", "logout", "newsurvey"]);
+    customiseNavbar(["home", "logout"]);
     if (localStorage.getItem("authorization") === null) loadPage("login");
     // there is a token in localstorage
     

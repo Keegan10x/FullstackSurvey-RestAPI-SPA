@@ -82,3 +82,15 @@ export async function getAverageScore(userid, surveyid){
 	const result = await db.query(sql)
 	return result[0].avg
 }
+
+
+export async function getRoles(userid){
+	let sql = `SELECT role FROM accounts WHERE id=${userid}`
+	const result = await db.query(sql)
+	const roleid = result.pop().role
+	//console.log(sql)
+	//console.log(roleid)
+	sql = `SELECT role FROM roles WHERE id=${roleid}`
+	const perms = await db.query(sql)
+	return perms.pop().role
+}
