@@ -32,7 +32,8 @@ async function login() {
   if (response.status === 200) {
     localStorage.setItem("username", response.json.data.username);
     localStorage.setItem("authorization", token);
-    showMessage(`you are logged in as ${response.json.data.username}`);
+    //console.log("###############logging rsp", response)
+    showMessage(`you are logged in as ${response.json.data}`);
     await loadPage("home");
   } else {
     document.querySelector('input[name="pass"]').value = "";

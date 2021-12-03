@@ -14,12 +14,13 @@ export async function setup(node) {
     console.log(node);
     document.querySelector("header p").innerText = "Survey Questions";
     customiseNavbar(["home", "logout"]);
-    if (localStorage.getItem("authorization") === null) loadPage("login");
+    //if(localStorage.getItem("authorization") === null) loadPage("login");
     // there is a token in localstorage
-    
-	  
-    await getQuestions(node)
-    node.querySelector("form").addEventListener("submit", await respond);
+    if(!localStorage.getItem("authorization")){loadPage("login")}
+    else { 
+	    await getQuestions(node)
+	    node.querySelector("form").addEventListener("submit", await respond);
+    }
   } catch (err) {
     console.error(err);
   }
@@ -41,8 +42,13 @@ async function getQuestions(node){
 	const rsp = await fetch(uri, options)
 	const surveyObj = await rsp.json()
 	window.myGlobalVariable = surveyObj
-	console.log(surveyObj.data.questions)
-	popSurveyForm(node, surveyObj)
+	console.log(surveyObj.data.questions.length)
+	if(surveyObj.data.questions.length === 0){
+		showMessage("Survey has no questions, ask admin to add questions")
+		loadPage("home")
+	}else{
+		popSurveyForm(node, surveyObj)
+	}
 }
 
 

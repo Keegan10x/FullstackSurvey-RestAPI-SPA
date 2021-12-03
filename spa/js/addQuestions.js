@@ -20,7 +20,7 @@ export async function setup(node) {
   console.log("surveyQuetions: setup");
   try {
     console.log(node);
-    document.querySelector("header p").innerText = "Survey Questions";
+    document.querySelector("header p").innerText = "Add Questions";
     customiseNavbar(["home", "logout", "newsurvey"]);
     if (localStorage.getItem("authorization") === null) loadPage("login");
     // there is a token in localstorage
@@ -155,11 +155,13 @@ function createForm(node){
 	//const form = document.createElement('form')
 	const qstLabel = document.createElement('label')
 	qstLabel.innerText = 'Question Title'
+	qstLabel.htmlFor = 'title'
 	const question = document.createElement('input')
 	question.setAttribute('name', 'title')
 	question.attributes["required"] = "required"
 	const dscrLabel = document.createElement('label')
 	dscrLabel.innerText = 'Question Description'
+	dscrLabel.htmlFor = 'description'
 	const description = document.createElement('textarea')
 	description.attributes["required"] = "required"
 	qstLabel.appendChild(document.createElement('br'))

@@ -16,7 +16,7 @@ export async function setup(node) {
     console.log(token);
     if (token === null) customiseNavbar(["home", "register", "login"]); //navbar if logged out
 
-    if (!admin) customiseNavbar(["home", "logout", "surveyQuestions"]); 
+    if (!admin && token) customiseNavbar(["home", "logout", "surveyQuestions"]); //if not admin
 	  
     //call functions here
     console.log('SURVEYS')
@@ -75,21 +75,29 @@ function popSurveyFrags(node, obj){
 		const time = document.createElement('time')
 		const descPara = document.createElement('p')
 		const questionPara = document.createElement('p')
-		const link = document.createElement('a')
-		link.innerText = 'TAKE SURVEY'
+		
 		
 		h2.innerText = survey.name
 		time.innerText = `Date Created: ${survey.created}`
 		descPara.innerHTML = survey.description
 		questionPara.innerText = `Questions: ${survey.questions}`
-		if(survey.href){ link.href = `/surveyQuestions?survey=${survey.id}`
-		}else link.innerText = survey.avgScore
 		
 		section.appendChild(h2)
 		section.appendChild(time)
 		section.appendChild(descPara)
 		section.appendChild(questionPara)
-		section.appendChild(link)
+		
+		if(survey.href){
+			const link = document.createElement('a')
+			link.innerText = 'TAKE SURVEY'
+			link.href = `/surveyQuestions?survey=${survey.id}`
+			section.appendChild(link)
+		}else{
+			const score = document.createElement('p')
+			score.innerText = `Average Score: ${survey.avgScore}`
+			section.appendChild(score)
+		}
+		
 		fragment.appendChild(section)
 		node.appendChild(fragment)
 	}

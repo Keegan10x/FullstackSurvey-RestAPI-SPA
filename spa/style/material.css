@@ -53,6 +53,7 @@ aside {
 	border-radius: 0.2em;
 }
 
+
 .hidden {
 	display: none;
 }
@@ -151,33 +152,72 @@ main > article {
 main p {
 	font-size: 0.8em;
 	color: var(--colorOnBackground);
+	margin-bottom: 20px;
 }
 
 /* =========== FORM =========== */
 
 input[type="submit"] {
-	margin-top: 25px;
+	background-color: var(--colorPrimary);
+	border: 0;
+	border-radius: 0.5em;
+	box-shadow : 2px 2px 2px lightgrey;
+  color: var(--colorOnPrimary);
+	padding: 0.8em 1.3em;
+	margin: 0.2em;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+	font-size: 0.8em;
+	margin-top: 0.5em;
 }
 
 form {
 	margin-bottom: 10px;
 }
 
-input[type="text"], input[type="email"], input[type="password"], textarea, select {
+time {
+	text-decoration: underline;
+}
+
+section > p {
+	margin-top: 25px;
+	font-size: 1em;
+}
+
+hr {
+	border: 2px solid #607D8B;
+	border-radius: 6px;
+	width: 99%;
+	padding: 0;
+	margin-top: 0px;
+	margin-bottom: 5px;
+}
+
+
+input[type="text"], input[type="email"], input[name="title"], input[type="password"], textarea, select {
 	background-color: var(--colorBackground);
-	font-size: 0.8em;
+	font-size: 1em;
+	/*
 	min-width: 240px;
 	max-width: 400px;
+	*/
+	
+	width:95%;
+	height:20px;
+	border-radius: 0.5em;
+	
 	border: none;
 	border-bottom: 1px solid var(--colorPrimary);
 	padding: 0.5em;
 	margin-top: 0.3em;
+	margin-bottom: 10px;
 }
 
 button {
 	background-color: var(--colorPrimary);
 	border: 0;
-	border-radius: 0.3em;
+	border-radius: 0.5em;
 	box-shadow : 2px 2px 2px lightgrey;
   color: var(--colorOnPrimary);
 	padding: 0.8em 1.3em;
@@ -199,14 +239,36 @@ input[type="radio"] {
 	display: block;
 }
 
-input[name="title"]{
-	width: 95%;
-
- 
+label[for="surveyName"], label[for="description"], label[for="title"], label[for="email"], label[for="pass"], label[for="name"] {
+	font-size: 1.2em;
+	font-weight: bold;
+	color: black;
 }
 
+
+label {
+	color: green;
+}
+
+
+
+
 textarea{
-	width: 95%;
+	background-color: var(--colorBackground);
+	font-size: 1em;
+	/*
+	min-width: 240px;
+	max-width: 400px;
+	*/
+	
+	width:95%;
+	height:150px;
+	border-radius: 0.5em;
+	
+	border: none;
+	border-bottom: 1px solid var(--colorPrimary);
+	padding: 0.5em;
+	margin-top: 0.3em;
 }
 
 
@@ -216,5 +278,37 @@ button{
   justify-content: center; /* horizontal */
   align-items: left;
 }
+
+
+
+section > a{
+	width: 99%;
+
+	color: white;
+	text-decoration: none;
+	background-color: #607D8B;
+	border-radius: 0.5em;
+	padding: 4px;
+	align-items: center;
+	border: solid black;	
+	
+	
+	padding: 0;
+	margin: 0;
+	display: block;
+
+	flex-basis: 8em;
+	/* border: 1px solid grey; */
+	height: 2em;
+	text-align: center;
+	text-transform: uppercase;
+	padding-top: 0.62em;
+	font-size: 0.8em;
+}
+
+hr {
+	margin-top: 20px;
+}
+
 
 /* ========== FOOTER ========== */
