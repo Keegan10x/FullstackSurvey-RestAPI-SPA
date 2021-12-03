@@ -235,9 +235,7 @@ button:hover {
 }
 
 
-input[type="radio"] {
-	display: block;
-}
+
 
 label[for="surveyName"], label[for="description"], label[for="title"], label[for="email"], label[for="pass"], label[for="name"] {
 	font-size: 1.2em;
@@ -247,7 +245,7 @@ label[for="surveyName"], label[for="description"], label[for="title"], label[for
 
 
 label {
-	color: green;
+	color: #455A64;
 }
 
 
@@ -309,6 +307,13 @@ section > a{
 hr {
 	margin-top: 20px;
 }
+
+
+label, input[type="radio"]{
+	
+}
+
+
 
 
 /* ========== FOOTER ========== */

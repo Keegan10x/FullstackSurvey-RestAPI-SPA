@@ -58,26 +58,31 @@ function popSurveyForm(node, obj){
 	
 	const form = document.createElement('form')
 		for(const qst of obj.data.questions){	 
-			
+			 const br = document.createElement('br')
+			 
 			 const fieldset = document.createElement('fieldset') 
 			 const legend = document.createElement('legend')
 			 const dscr = document.createElement('p')
 			 
+			 const fig1 = document.createElement('figure')
 			 const lb1 = document.createElement('label')
 			 const radio1 = document.createElement('input')
 			 
 			 const lb2 = document.createElement('label')
 			 const radio2 = document.createElement('input')
-			 
+		
+			
 			 const lb3 = document.createElement('label')
 			 const radio3 = document.createElement('input')
-			 
+
+			
 			 const lb4 = document.createElement('label')
 			 const radio4 = document.createElement('input')
-			 
+
 			 const lb5 = document.createElement('label')
 			 const radio5 = document.createElement('input')
 
+			
 			 legend.innerText = qst.title
 			 dscr.innerHTML = qst.description
 			
@@ -86,50 +91,84 @@ function popSurveyForm(node, obj){
 			 radio1.setAttribute('value', "1")
 			 radio1.setAttribute('id', qst.id)
 			 lb1.innerText = 'Strongly Disagree (1 point)'
+			 
 			
 			 radio2.setAttribute('type', 'radio')
 			 radio2.setAttribute('name', qst.title)
 			 radio2.setAttribute('value', "2")
 			 radio2.setAttribute('id', qst.id)
 			 lb2.innerText = 'Disagree (2 points)'
-			
+			 
 			
 			 radio3.setAttribute('type', 'radio')
 			 radio3.setAttribute('name', qst.title)
 			 radio3.setAttribute('value', "3")
 			 radio3.setAttribute('id', qst.id)
 			 lb3.innerText = 'Neither agree nor disagree (3 points)'
+			 
 			
 			 radio4.setAttribute('type', 'radio')
 			 radio4.setAttribute('name', qst.title)
 			 radio4.setAttribute('value', "4")
 			 radio4.setAttribute('id', qst.id)
 			 lb4.innerText = 'Agree (4 points)'
+			 
 			
 			 radio5.setAttribute('type', 'radio')
 			 radio5.setAttribute('name', qst.title)
 			 radio5.setAttribute('value', "5")
 			 radio5.setAttribute('id', qst.id)
 			 lb5.innerText = 'Strongly agree (5 points)'
+			 
+			
 			
 			 fieldset.appendChild(legend)
 			 fieldset.appendChild(dscr)
 			
-			 fieldset.appendChild(lb1)
-			 fieldset.appendChild(radio1)
+			 
+			 const sec1 = document.createElement('p')
+			 sec1.appendChild(lb1)
+			 sec1.appendChild(radio1)
+			 sec1.appendChild(br)
+			 fieldset.appendChild(sec1)
+			 //fieldset.appendChild(lb1)
+			 //fieldset.appendChild(radio1)
+			 
 			
-			 fieldset.appendChild(lb2)
-			 fieldset.appendChild(radio2)
+			 const sec2 = document.createElement('p')
+			 sec2.appendChild(lb2)
+			 sec2.appendChild(radio2)
+			 sec2.appendChild(br)
+			 fieldset.appendChild(sec2)
+			 //fieldset.appendChild(lb2)
+			 //fieldset.appendChild(radio2)
 			
-			 fieldset.appendChild(lb3)
-			 fieldset.appendChild(radio3)
+			 const sec3 = document.createElement('p')
+			 sec3.appendChild(lb3)
+			 sec3.appendChild(radio3)
+			 sec3.appendChild(br)
+			 fieldset.appendChild(sec3)
+			 //fieldset.appendChild(lb3)
+			 //fieldset.appendChild(radio3)
+			 
 			
-			 fieldset.appendChild(lb4)
-			 fieldset.appendChild(radio4)
-			
-			 fieldset.appendChild(lb5)
-			 fieldset.appendChild(radio5)
-			
+			 const sec4 = document.createElement('p')
+			 sec4.appendChild(lb4)
+			 sec4.appendChild(radio4)
+			 sec4.appendChild(br)
+			 fieldset.appendChild(sec4)
+			 //fieldset.appendChild(lb4)
+			 //fieldset.appendChild(radio4)
+			 
+
+			 const sec5 = document.createElement('p')
+			 sec5.appendChild(lb5)
+			 sec5.appendChild(radio5)
+			 sec5.appendChild(br)
+			 fieldset.appendChild(sec5)	
+			 //fieldset.appendChild(lb5)
+			 //fieldset.appendChild(radio5)
+
 			
 			 console.log(fragment)
 			 form.appendChild(fieldset)
